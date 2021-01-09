@@ -12,7 +12,7 @@
 </head>
 <body>
 Sign up:
-<br/>
+<br />
 ${message}
 <form action="/registration" method="POST">
     <input type="text" name="username" placeholder="Username"/>
@@ -21,5 +21,6 @@ ${message}
     <br/>
     <input type="submit" value="Register"/>
 </form>
+<a href="/">Main page</a>
 </body>
 </html>

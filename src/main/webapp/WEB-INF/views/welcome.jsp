@@ -8,14 +8,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <jsp:include page="_header.jsp" />
-    <title>Welcome</title>
+    <title>Welcome Page</title>
 </head>
 <body>
-<a href="/login">Sign in</a>
-<a href="/registration">Sign up</a>
-<p>Welcome!</p>
-<a href="/main">Main page</a>
-
+<jsp:include page="_header.jsp"/>
 </body>
 </html>

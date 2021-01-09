@@ -52,7 +52,7 @@ public class LoginController extends HttpServlet {
 
                 if (user == null) {
                     hasError = true;
-                    errorString = "User Name or password invalid";
+                    errorString = "Username or password is invalid";
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -61,7 +61,7 @@ public class LoginController extends HttpServlet {
             }
         }
         if (hasError) {
-            request.setAttribute("errorString", errorString);
+            request.setAttribute("message", errorString);
             request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
         }
         else {

@@ -13,7 +13,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 @WebFilter(
         filterName = "cookieFilter",
-        urlPatterns = {"/u/*", "/users", "/main"}
+        urlPatterns = {"/u/*", "/users", "/edit/*"}
 )
 public class CookieFilter implements Filter {
     public CookieFilter(){
@@ -44,22 +44,6 @@ public class CookieFilter implements Filter {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.sendRedirect("/login");
         }
-        /*
-        Connection conn = WebAppUtil.getConnection(request);
-
-        String checked = (String) session.getAttribute("COOKIE_CHECKED");
-        if (checked == null && conn != null) {
-            String username = WebAppUtil.getUserCookie(req);
-            try {
-                User user = UserDAO.findUserByUsername(conn, username);
-                WebAppUtil.setUserInSession(session, user);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            session.setAttribute("COOKIE_CHECKED", "CHECKED");
-        }
-        chain.doFilter(request, response);
-         */
     }
 
     @Override

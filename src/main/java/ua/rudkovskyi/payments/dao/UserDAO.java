@@ -13,7 +13,7 @@ public class UserDAO {
     private static final String SELECT = "SELECT u.id, u.username, u.password, u.is_active, ";
     private static final String GROUP_CONCAT = "GROUP_CONCAT(r.roles ORDER BY r.roles SEPARATOR ', ') as 'roles' ";
     private static final String FROM = "FROM user u INNER JOIN user_role r ON u.id = r.user_id ";
-    private static final String HAVING = " HAVING username IS NOT NULL";
+    private static final String HAVING = " HAVING u.id IS NOT NULL";
 
     private UserDAO() {
         throw new IllegalStateException("DAO class");
@@ -111,7 +111,7 @@ public class UserDAO {
     }
 
     public static Set<Role> getMissingFromDBUserRoles(Connection conn, User user) throws SQLException {
-        String sql = "SELECT r.roles FROM user_role r WHERE user_id = ?;";
+        String sql = "SELECT r.roles FROM user_role r WHERE user_id = ? HAVING roles IS NOT NULL";
         PreparedStatement prepState = conn.prepareStatement(sql);
         prepState.setBigDecimal(1, BigDecimal.valueOf(user.getId()));
         ResultSet resSet = prepState.executeQuery();

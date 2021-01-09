@@ -12,6 +12,8 @@
 </head>
 <body>
 Sign in:
+<br />
+${message}
 <form action="/login" method="POST">
     <input type="text" name="username" placeholder="Username"/>
     <br/>
@@ -20,5 +22,6 @@ Sign in:
     <input type="submit" value="Sign In"/>
 </form>
 <a href="/registration">Sign up</a>
+<a href="/">Main page</a>
 </body>
 </html>

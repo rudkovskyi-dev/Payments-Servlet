@@ -1,15 +1,19 @@
 package ua.rudkovskyi.payments.controller.info;
 
-import ua.rudkovskyi.payments.bean.Role;
-import ua.rudkovskyi.payments.bean.User;
+import ua.rudkovskyi.payments.bean.Balance;
+import ua.rudkovskyi.payments.dao.BalanceDAO;
+import ua.rudkovskyi.payments.util.AuthUtil;
 import ua.rudkovskyi.payments.util.WebAppUtil;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet(
         name = "userController",
@@ -23,19 +27,28 @@ public class UserController extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         long requestedUserId = Long.parseLong(request.getAttribute("userId").toString());
-        if (!(checkUserAuthority(requestedUserId, request) || checkAuthority(request))){
+        boolean isAdmin = AuthUtil.checkAdminAuthority(request);
+        if (!(isAdmin || AuthUtil.checkUserAuthority(requestedUserId, request))){
             response.sendRedirect("/u/" + WebAppUtil.getUserFromSession(request.getSession()).getId());
         }
-        PrintWriter pw = response.getWriter();
-        pw.println("<p>This is GET</p>");
-        pw.println("<p>User " + request.getAttribute("userId") + "</p>");
+        try {
+            List<Balance> balances = BalanceDAO.findBalancesByOwnerId(
+                    WebAppUtil.getConnection(request),
+                    requestedUserId
+            );
+            request.setAttribute("balances", balances);
+            request.setAttribute("isAdmin", isAdmin);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        request.getRequestDispatcher("/WEB-INF/views/balances.jsp").forward(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (!checkAuthority(request)) {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        if (!AuthUtil.checkAdminAuthority(request)) {
             doGet(request, response);
             return;
         }
@@ -74,15 +87,5 @@ public class UserController extends HttpServlet {
             }
         }
         return false;
-    }
-
-    public boolean checkAuthority(HttpServletRequest request) {
-        User user = WebAppUtil.getUserFromSession(request.getSession());
-        return user.getRoles().contains(Role.ADMIN);
-    }
-
-    public boolean checkUserAuthority(long id, HttpServletRequest request) {
-        User user = WebAppUtil.getUserFromSession(request.getSession());
-        return user.getId().equals(id);
     }
 }
