@@ -2,6 +2,7 @@ package ua.rudkovskyi.payments.controller.info;
 
 import ua.rudkovskyi.payments.bean.Role;
 import ua.rudkovskyi.payments.bean.User;
+import ua.rudkovskyi.payments.util.AuthUtil;
 import ua.rudkovskyi.payments.util.WebAppUtil;
 
 import javax.servlet.annotation.WebServlet;
@@ -24,7 +25,7 @@ public class TransactionController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (!checkAuthority(request)){
+        if (!AuthUtil.checkAdminAuthority(request)){
             User user = WebAppUtil.getUserFromSession(request.getSession());
             response.sendRedirect(request.getContextPath() + "/u/" + user.getId());
             return;
@@ -74,7 +75,7 @@ public class TransactionController extends HttpServlet {
     public boolean selectMethod(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String method = request.getParameter("_method");
         if (method != null){
-            boolean ifAuthorized = checkAuthority(request);
+            boolean ifAuthorized = AuthUtil.checkAdminAuthority(request);
             if (ifAuthorized && method.equals("PUT")){
                 doPut(request, response);
                 return true;
@@ -85,10 +86,5 @@ public class TransactionController extends HttpServlet {
             }
         }
         return false;
-    }
-
-    public boolean checkAuthority(HttpServletRequest request){
-        User user = WebAppUtil.getUserFromSession(request.getSession());
-        return user.getRoles().contains(Role.ADMIN);
     }
 }

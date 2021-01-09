@@ -13,7 +13,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 @WebFilter(
         filterName = "cookieFilter",
-        urlPatterns = {"/u/*", "/users", "/edit/*"}
+        urlPatterns = {"/u/*", "/users", "/edit/*", "/create/*"}
 )
 public class CookieFilter implements Filter {
     public CookieFilter(){

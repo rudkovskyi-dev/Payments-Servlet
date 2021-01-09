@@ -53,6 +53,11 @@ public class LoginController extends HttpServlet {
                 if (user == null) {
                     hasError = true;
                     errorString = "Username or password is invalid";
+                } else {
+                    if (!user.isActive()) {
+                        hasError = true;
+                        errorString = "Account is locked";
+                    }
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

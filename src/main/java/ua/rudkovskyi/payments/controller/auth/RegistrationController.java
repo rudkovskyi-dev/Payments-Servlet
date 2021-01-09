@@ -61,7 +61,7 @@ public class RegistrationController extends HttpServlet {
             Connection conn = WebAppUtil.getConnection(request);
             user = new User(username, password);
             try {
-                UserDAO.addUser(conn, user);
+                UserDAO.createUser(conn, user);
             } catch (SQLException e){
                 e.printStackTrace();
                 message = "DB Error occurred (#2)";

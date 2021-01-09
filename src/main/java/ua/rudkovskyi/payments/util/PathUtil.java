@@ -1,9 +1,13 @@
 package ua.rudkovskyi.payments.util;
 
+import ua.rudkovskyi.payments.dao.BalanceDAO;
+import ua.rudkovskyi.payments.dao.UserDAO;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,5 +57,36 @@ public class PathUtil {
             }
         }
         return pathLong;
+    }
+
+    public static boolean isUserDNEWithRedirect404(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        long requestedUserId = Long.parseLong(request.getAttribute("userId").toString());
+        boolean isUserPresent = false;
+        try {
+            isUserPresent = UserDAO.findIfUserExistsById(WebAppUtil.getConnection(request), requestedUserId);
+            if (isUserPresent){
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        request.getRequestDispatcher("/404").forward(request, response);
+        return true;
+    }
+
+    public static boolean isBalanceDNEWithRedirect404(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        long requestedUserId = Long.parseLong(request.getAttribute("userId").toString());
+        long requestedBalanceId = Long.parseLong(request.getAttribute("balanceId").toString());
+        boolean isBalancePresent = false;
+        try {
+            isBalancePresent = BalanceDAO.findIfBalanceExistsByBalanceIdAndUserId(WebAppUtil.getConnection(request), requestedUserId, requestedBalanceId);
+            if (isBalancePresent){
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        request.getRequestDispatcher("/404").forward(request, response);
+        return true;
     }
 }

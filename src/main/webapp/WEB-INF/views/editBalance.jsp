@@ -9,7 +9,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Edit Balance</title>
+    <title>Edit Balance Page</title>
     <c:set var="ownerId" value="${balance.owner.id}"/>
     <c:set var="balanceId" value="${balance.id}"/>
     <c:set var="balanceName" value="${balance.name}"/>
@@ -19,14 +19,14 @@
 <body>
 <jsp:include page="_header.jsp"/>
 <p>Edit Balance:</p>
-<form action="/edit/${ownerId}/${balanceId}" method="POST">
+<form action="/u/${userId}/${balanceId}" method="POST">
     <input type="hidden" name="_method" value="PUT">
     <label>Change balance name:
-        <input type="text" name="name" value="${balanceName}"/>
+        <input type="text" name="name" value="${balanceName}" required/>
     </label>
     <br/>
     <label>Change balance amount:
-        <input type="number" step="0.01" name="doubleAmount" value="${balanceDoubleAmount}"/>
+        <input type="number" step="0.01" name="doubleAmount" value="${balanceDoubleAmount}" required/>
     </label>
     <br/>
     <label>
@@ -40,6 +40,10 @@
     </label>
     <br/>
     <input type="submit" value="Save"/>
+</form>
+<form action="/u/${userId}/${balanceId}" method="POST">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="submit" value="Delete Balance"/>
 </form>
 </body>
 </html>

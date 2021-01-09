@@ -12,7 +12,7 @@ public class User {
 
     private Set<Role> roles;
 
-    public User(){
+    public User() {
     }
 
     public User(String username, String password) {
@@ -60,6 +60,10 @@ public class User {
     }
 
     public boolean isActive() {
+        return isActive;
+    }
+
+    public boolean getIsActive() {
         return isActive;
     }
 

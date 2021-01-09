@@ -24,6 +24,20 @@ public class BalanceDAO {
         throw new IllegalStateException("DAO class");
     }
 
+    public static boolean findIfBalanceExistsByBalanceIdAndUserId(Connection conn, Long userId, Long balanceId) throws SQLException {
+        String sql = "SELECT b.id FROM balance b " +
+                "WHERE b.user_id = ? AND b.id = ?" + HAVING;
+        PreparedStatement prepState = conn.prepareStatement(sql);
+
+        prepState.setBigDecimal(1, BigDecimal.valueOf(userId));
+        prepState.setBigDecimal(2, BigDecimal.valueOf(balanceId));
+        ResultSet resSet = prepState.executeQuery();
+        if (resSet.next()) {
+            return true;
+        }
+        return false;
+    }
+
     public static Balance findBalanceByIdWithoutOwner(Connection conn, long id) throws SQLException {
         String sql = "SELECT b.id, b.name, b.amount, b.is_locked, b.is_requested " +
                 "FROM balance b WHERE b.id = ? HAVING b.id IS NOT NULL";
@@ -66,6 +80,22 @@ public class BalanceDAO {
         return balances;
     }
 
+    public static void createBalanceWithUserId(Connection conn, Balance balance, long id) throws SQLException {
+        String sql = "INSERT INTO balance(id, name, amount, double_amount, is_locked, is_requested, user_id) " +
+                "VALUES (?,?,?,?,?,?,?)";
+        PreparedStatement prepState = conn.prepareStatement(sql);
+        balance.setId(selectAndIncrementBalanceId(conn));
+
+        prepState.setBigDecimal(1, BigDecimal.valueOf(balance.getId()));
+        prepState.setString(2, balance.getName());
+        prepState.setBigDecimal(3, BigDecimal.valueOf(balance.getAmount()));
+        prepState.setDouble(4, balance.getDoubleAmount());
+        prepState.setBoolean(5, balance.getIsLocked());
+        prepState.setBoolean(6, balance.getIsRequested());
+        prepState.setBigDecimal(7, BigDecimal.valueOf(id));
+        prepState.executeUpdate();
+    }
+
     public static void updateBalance(Connection conn, Balance balance) throws SQLException {
         String sqlSelect = "SELECT b.id, b.name, b.amount, b.double_amount, b.is_locked, b.is_requested " +
                 "FROM balance b WHERE b.id = " + balance.getId() + " HAVING b.id IS NOT NULL FOR UPDATE";
@@ -83,6 +113,13 @@ public class BalanceDAO {
             prepState.setBigDecimal(6, BigDecimal.valueOf(balance.getId()));
             prepState.executeUpdate();
         }
+    }
+
+    public static void deleteBalanceById(Connection conn, long id) throws SQLException {
+        String sql = "DELETE FROM balance b WHERE b.id = ?";
+        PreparedStatement prepState = conn.prepareStatement(sql);
+        prepState.setBigDecimal(1, BigDecimal.valueOf(id));
+        prepState.execute();
     }
 
     public static User createUserFromResultSet(ResultSet resSet) throws SQLException {
@@ -106,5 +143,18 @@ public class BalanceDAO {
                 resSet.getBoolean("is_requested"),
                 user
         );
+    }
+
+    public static long selectAndIncrementBalanceId(Connection conn) throws SQLException {
+        String sqlSelect = "SELECT h.next_val FROM hibernate_sequence_2 h LIMIT 1 FOR UPDATE";
+        String sqlUpdate = "UPDATE hibernate_sequence_2 h SET h.next_val = ?";
+        Statement statement = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        ResultSet resSet = statement.executeQuery(sqlSelect);
+        resSet.next();
+        long id = resSet.getLong("next_val");
+        PreparedStatement prepState = conn.prepareStatement(sqlUpdate);
+        prepState.setBigDecimal(1, BigDecimal.valueOf(id + 1));
+        prepState.executeUpdate();
+        return id;
     }
 }

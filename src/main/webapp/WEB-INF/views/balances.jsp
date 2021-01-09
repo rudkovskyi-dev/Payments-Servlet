@@ -14,27 +14,31 @@
 <body>
 <jsp:include page="_header.jsp"/>
 <p>Balances:</p>
+<c:if test="${isAdmin}">
+    <p>
+        <a href="/create/${userId}">Create Balance</a>
+    </p>
+</c:if>
 <p>
     <c:forEach var="balance" items="${balances}">
-        <c:set var="ownerId" value="${balance.owner.id}"/>
         <c:set var="balanceId" value="${balance.id}"/>
         <c:set var="balanceName" value="${balance.name}"/>
         <c:set var="balanceDoubleAmount" value="${balance.doubleAmount}"/>
         <div>
             <b>${balanceId}</b>
-            <span><a href="/u/${ownerId}/${balanceId}">${balanceName}</a></span>
+            <span><a href="/u/${userId}/${balanceId}">${balanceName}</a></span>
             <i>${balanceDoubleAmount}</i>
             <span>
                 <c:if test="${isAdmin}">
-                    <a href="/edit/${ownerId}/${balanceId}">Edit</a>
+                    <a href="/edit/${userId}/${balanceId}">Edit</a>
                 </c:if>
             </span>
             <strong>
                 <c:choose>
                     <c:when test="${!balance.isLocked}">
                         <c:if test="${!isAdmin}">
-                            <a href="/edit/${ownerId}/${balanceId}"><b>LOCK</b></a>
-                            <a href="/pay/${ownerId}/${balanceId}">Make payment</a>
+                            <a href="/edit/${userId}/${balanceId}"><b>LOCK</b></a>
+                            <a href="/pay/${userId}/${balanceId}">Make payment</a>
                         </c:if>
                     </c:when>
                     <c:otherwise>
@@ -45,7 +49,7 @@
                             </c:when>
                             <c:otherwise>
                                 <c:if test="${!isAdmin}">
-                                    <a href="/edit/${ownerId}/${balanceId}">Request unlock</a>
+                                    <a href="/edit/${userId}/${balanceId}">Request unlock</a>
                                 </c:if>
                             </c:otherwise>
                         </c:choose>

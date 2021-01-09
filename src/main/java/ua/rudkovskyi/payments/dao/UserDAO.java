@@ -5,9 +5,7 @@ import ua.rudkovskyi.payments.bean.User;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.*;
 
 public class UserDAO {
     private static final String SELECT = "SELECT u.id, u.username, u.password, u.is_active, ";
@@ -17,6 +15,19 @@ public class UserDAO {
 
     private UserDAO() {
         throw new IllegalStateException("DAO class");
+    }
+
+    public static boolean findIfUserExistsById(Connection conn, Long id) throws SQLException {
+        String sql = "SELECT u.id FROM user u " +
+                "WHERE u.id = ?" + HAVING;
+        PreparedStatement prepState = conn.prepareStatement(sql);
+
+        prepState.setBigDecimal(1, BigDecimal.valueOf(id));
+        ResultSet resSet = prepState.executeQuery();
+        if (resSet.next()) {
+            return true;
+        }
+        return false;
     }
 
     public static User findUserById(Connection conn, Long id)
@@ -42,6 +53,26 @@ public class UserDAO {
             return user;
         }
         return null;
+    }
+
+    public static List<User> findAllUsers(Connection conn) throws SQLException {
+        String sql = SELECT + GROUP_CONCAT + FROM + "GROUP BY u.id" + HAVING;
+        Statement statement = conn.createStatement();
+        ResultSet resSet = statement.executeQuery(sql);
+        List<User> users = new ArrayList<>();
+        while(resSet.next()){
+            Set<Role> roles = EnumSet.noneOf(Role.class);
+            Arrays.stream(resSet.getString("roles").split(", "))
+                    .forEach(r -> roles.add(Role.valueOf(r)));
+            User user = new User();
+            user.setId(resSet.getLong("id"));
+            user.setUsername(resSet.getString("username"));
+            user.setPassword(resSet.getString("password"));
+            user.setActive(resSet.getBoolean("is_active"));
+            user.setRoles(roles);
+            users.add(user);
+        }
+        return users;
     }
 
     public static User findUserByUsername(Connection conn, String username)
@@ -91,6 +122,7 @@ public class UserDAO {
             user.setId(resSet.getLong("id"));
             user.setUsername(username);
             user.setPassword(password);
+            user.setActive(resSet.getBoolean("is_active"));
             user.setRoles(roles);
             return user;
         }
@@ -110,52 +142,52 @@ public class UserDAO {
         return id;
     }
 
-    public static Set<Role> getMissingFromDBUserRoles(Connection conn, User user) throws SQLException {
-        String sql = "SELECT r.roles FROM user_role r WHERE user_id = ? HAVING roles IS NOT NULL";
-        PreparedStatement prepState = conn.prepareStatement(sql);
-        prepState.setBigDecimal(1, BigDecimal.valueOf(user.getId()));
-        ResultSet resSet = prepState.executeQuery();
-        Set<Role> roles = EnumSet.noneOf(Role.class);
-        if (!resSet.next()) {
-            return user.getRoles();
-        } else {
-            do {
-                Role role = Role.valueOf(resSet.getString("roles"));
-                if (!user.getRoles().contains(role)) {
-                    roles.add(role);
-                }
-            }
-            while (resSet.next());
-        }
-        return roles;
-    }
-
-    public static void addUserRoles(Connection conn, User user) throws SQLException {
-        String sql = "INSERT INTO user_role(user_id, roles) VALUES (?,?)";
-        Set<Role> roles = getMissingFromDBUserRoles(conn, user);
-        for (Role r : roles) {
-            PreparedStatement prepState = conn.prepareStatement(sql);
-            prepState.setBigDecimal(1, BigDecimal.valueOf(user.getId()));
-            prepState.setString(2, r.toString());
-            prepState.executeUpdate();
+    public static void updateUserRoles(Connection conn, User user) throws SQLException {
+        String sqlDelete = "DELETE FROM user_role r WHERE user_id = ?";
+        String sqlInsert = "INSERT INTO user_role(user_id, roles) " +
+                "VALUES (?,?)";
+        PreparedStatement prepStateDelete = conn.prepareStatement(sqlDelete);
+        PreparedStatement prepStateInsert = conn.prepareStatement(sqlInsert);
+        prepStateDelete.setBigDecimal(1, BigDecimal.valueOf(user.getId()));
+        prepStateDelete.execute();
+        for (Role r : user.getRoles()){
+            prepStateInsert.setBigDecimal(1, BigDecimal.valueOf(user.getId()));
+            prepStateInsert.setString(2, r.toString());
+            prepStateInsert.executeUpdate();
         }
     }
 
-    public static void addUser(
+    public static void createUser(
             Connection conn,
             User user) throws SQLException {
         String sql = "INSERT INTO user(id, username, password, is_active) VALUES (?,?,?,?)";
 
-        PreparedStatement pstm = conn.prepareStatement(sql);
+        PreparedStatement prepState = conn.prepareStatement(sql);
 
         user.setId(selectAndIncrementUserId(conn));
-        pstm.setBigDecimal(1, BigDecimal.valueOf(user.getId()));
-        pstm.setString(2, user.getUsername());
-        pstm.setString(3, user.getPassword());
-        pstm.setBoolean(4, user.isActive());
-        pstm.executeUpdate();
-        addUserRoles(conn, user);
+        prepState.setBigDecimal(1, BigDecimal.valueOf(user.getId()));
+        prepState.setString(2, user.getUsername());
+        prepState.setString(3, user.getPassword());
+        prepState.setBoolean(4, user.isActive());
+        prepState.executeUpdate();
+        updateUserRoles(conn, user);
     }
 
-    //TODO Delete User and Roles, lock balances
+    public static void updateUser(Connection conn, User user) throws SQLException {
+        String sqlSelect = "SELECT u.id, u.username, u.password, u.is_active " +
+                "FROM user u WHERE u.id = " + user.getId() + " HAVING u.id IS NOT NULL FOR UPDATE";
+        String sqlUpdate = "UPDATE user u SET u.username = ?, u.password = ?, u.is_active = ? " +
+                "WHERE u.id = ?";
+        Statement statement = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        ResultSet resSet = statement.executeQuery(sqlSelect);
+        if (resSet.next()) {
+            PreparedStatement prepState = conn.prepareStatement(sqlUpdate);
+            prepState.setString(1, user.getUsername());
+            prepState.setString(2, user.getPassword());
+            prepState.setBoolean(3, user.isActive());
+            prepState.setBigDecimal(4, BigDecimal.valueOf(user.getId()));
+            prepState.executeUpdate();
+            updateUserRoles(conn, user);
+        }
+    }
 }

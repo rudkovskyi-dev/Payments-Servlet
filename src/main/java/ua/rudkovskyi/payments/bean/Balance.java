@@ -12,6 +12,14 @@ public class Balance {
     public Balance() {
     }
 
+    public Balance(String name, Long amount, boolean isLocked) {
+        this.name = name;
+        this.amount = amount;
+        this.doubleAmount = amount / 100.0;
+        this.isLocked = isLocked;
+        this.isRequested = false;
+    }
+
     public Balance(Long id, String name, Long amount, boolean isLocked, boolean isRequested, User owner) {
         this.id = id;
         this.name = name;
