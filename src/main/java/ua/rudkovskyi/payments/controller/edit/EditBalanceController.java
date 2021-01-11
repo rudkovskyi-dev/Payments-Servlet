@@ -85,43 +85,6 @@ public class EditBalanceController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        if (!AuthUtil.checkAdminAuthority(request)) {
-            doGet(request, response);
-            return;
-        }
-        if (PathUtil.isBalanceDNEWithRedirect404(request, response) ||
-                selectMethod(request, response)) {
-            return;
-        }
-        PrintWriter pw = response.getWriter();
-        pw.println("<p>This is POST</p>");
-        pw.println("<p>User " + request.getAttribute("userId") + "</p>");
-    }
-
-    @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
-    }
-
-    @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        PrintWriter pw = response.getWriter();
-        pw.println("<p>This is DELETE</p>");
-        pw.println("<p>User " + request.getAttribute("userId") + "</p>");
-    }
-
-    public boolean selectMethod(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String method = request.getParameter("_method");
-        if (method != null) {
-            if (method.equals("PUT")) {
-                doPut(request, response);
-                return true;
-            }
-            if (method.equals("DELETE")) {
-                doDelete(request, response);
-                return true;
-            }
-        }
-        return false;
+        doGet(request, response);
     }
 }

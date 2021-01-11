@@ -38,7 +38,7 @@
                     <c:when test="${!balance.isLocked}">
                         <c:if test="${!isAdmin}">
                             <a href="/edit/${userId}/${balanceId}"><b>LOCK</b></a>
-                            <a href="/pay/${userId}/${balanceId}">Make payment</a>
+                            <a href="/create/${userId}/${balanceId}">Make payment</a>
                         </c:if>
                     </c:when>
                     <c:otherwise>

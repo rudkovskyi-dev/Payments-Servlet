@@ -49,7 +49,6 @@ public class JDBCFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         if (this.JDBCRequired(req)) {
-            System.out.println("Open Connection for: " + req.getServletPath());
             Connection conn = null;
             try {
                 conn = ConnectionUtil.getConnection();
@@ -63,7 +62,6 @@ public class JDBCFilter implements Filter {
                 throw new ServletException();
             } finally {
                 ConnectionUtil.closeQuietly(conn);
-                System.out.println("Close Connection for: " + req.getServletPath());
             }
         }
         else {

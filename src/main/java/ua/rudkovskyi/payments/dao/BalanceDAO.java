@@ -3,6 +3,7 @@ package ua.rudkovskyi.payments.dao;
 import ua.rudkovskyi.payments.bean.Balance;
 import ua.rudkovskyi.payments.bean.Role;
 import ua.rudkovskyi.payments.bean.User;
+import ua.rudkovskyi.payments.util.DAOUtil;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -24,13 +25,26 @@ public class BalanceDAO {
         throw new IllegalStateException("DAO class");
     }
 
-    public static boolean findIfBalanceExistsByBalanceIdAndUserId(Connection conn, Long userId, Long balanceId) throws SQLException {
+    public static boolean findIfBalanceExistsByUserIdAndBalanceId(Connection conn, Long userId, Long balanceId) throws SQLException {
         String sql = "SELECT b.id FROM balance b " +
                 "WHERE b.user_id = ? AND b.id = ?" + HAVING;
         PreparedStatement prepState = conn.prepareStatement(sql);
 
         prepState.setBigDecimal(1, BigDecimal.valueOf(userId));
         prepState.setBigDecimal(2, BigDecimal.valueOf(balanceId));
+        ResultSet resSet = prepState.executeQuery();
+        if (resSet.next()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean findIfBalanceExistsByBalanceId(Connection conn, Long balanceId) throws SQLException {
+        String sql = "SELECT b.id FROM balance b " +
+                "WHERE b.id = ?" + HAVING;
+        PreparedStatement prepState = conn.prepareStatement(sql);
+
+        prepState.setBigDecimal(1, BigDecimal.valueOf(balanceId));
         ResultSet resSet = prepState.executeQuery();
         if (resSet.next()) {
             return true;
@@ -45,7 +59,7 @@ public class BalanceDAO {
         prepState.setBigDecimal(1, BigDecimal.valueOf(id));
         ResultSet resSet = prepState.executeQuery();
         if (resSet.next()) {
-            return createBalanceFromResultSetAndUser(resSet, null);
+            return DAOUtil.createBalanceFromResultSetAndUser(resSet, null);
         }
         return null;
     }
@@ -57,8 +71,8 @@ public class BalanceDAO {
         prepState.setBigDecimal(2, BigDecimal.valueOf(balanceId));
         ResultSet resSet = prepState.executeQuery();
         if (resSet.next()) {
-            User user = createUserFromResultSet(resSet);
-            return createBalanceFromResultSetAndUser(resSet, user);
+            User user = DAOUtil.createUserFromResultSet(resSet);
+            return DAOUtil.createBalanceFromResultSetAndUser(resSet, user);
         }
         return null;
     }
@@ -71,9 +85,9 @@ public class BalanceDAO {
         prepState.setBigDecimal(1, BigDecimal.valueOf(id));
         ResultSet resSet = prepState.executeQuery();
         if (resSet.next()) {
-            User user = createUserFromResultSet(resSet);
+            User user = DAOUtil.createUserFromResultSet(resSet);
             do {
-                balances.add(createBalanceFromResultSetAndUser(resSet, user));
+                balances.add(DAOUtil.createBalanceFromResultSetAndUser(resSet, user));
             }
             while (resSet.next());
         }
@@ -120,29 +134,6 @@ public class BalanceDAO {
         PreparedStatement prepState = conn.prepareStatement(sql);
         prepState.setBigDecimal(1, BigDecimal.valueOf(id));
         prepState.execute();
-    }
-
-    public static User createUserFromResultSet(ResultSet resSet) throws SQLException {
-        Set<Role> roles = EnumSet.noneOf(Role.class);
-        Arrays.stream(resSet.getString("roles").split(", "))
-                .forEach(r -> roles.add(Role.valueOf(r)));
-        return new User(
-                resSet.getLong("user_id"),
-                resSet.getString("username"),
-                resSet.getString("password"),
-                resSet.getBoolean("is_active"),
-                roles);
-    }
-
-    public static Balance createBalanceFromResultSetAndUser(ResultSet resSet, User user) throws SQLException {
-        return new Balance(
-                resSet.getLong("id"),
-                resSet.getString("name"),
-                resSet.getLong("amount"),
-                resSet.getBoolean("is_locked"),
-                resSet.getBoolean("is_requested"),
-                user
-        );
     }
 
     public static long selectAndIncrementBalanceId(Connection conn) throws SQLException {

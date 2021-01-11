@@ -1,6 +1,7 @@
 package ua.rudkovskyi.payments.util;
 
 import ua.rudkovskyi.payments.dao.BalanceDAO;
+import ua.rudkovskyi.payments.dao.TransactionDAO;
 import ua.rudkovskyi.payments.dao.UserDAO;
 
 import javax.servlet.ServletException;
@@ -59,7 +60,8 @@ public class PathUtil {
         return pathLong;
     }
 
-    public static boolean isUserDNEWithRedirect404(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public static boolean isUserDNEWithRedirect404(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         long requestedUserId = Long.parseLong(request.getAttribute("userId").toString());
         boolean isUserPresent = false;
         try {
@@ -74,13 +76,34 @@ public class PathUtil {
         return true;
     }
 
-    public static boolean isBalanceDNEWithRedirect404(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public static boolean isBalanceDNEWithRedirect404(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         long requestedUserId = Long.parseLong(request.getAttribute("userId").toString());
         long requestedBalanceId = Long.parseLong(request.getAttribute("balanceId").toString());
         boolean isBalancePresent = false;
         try {
-            isBalancePresent = BalanceDAO.findIfBalanceExistsByBalanceIdAndUserId(WebAppUtil.getConnection(request), requestedUserId, requestedBalanceId);
+            isBalancePresent = BalanceDAO.findIfBalanceExistsByUserIdAndBalanceId(WebAppUtil.getConnection(request),
+                    requestedUserId, requestedBalanceId);
             if (isBalancePresent){
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        request.getRequestDispatcher("/404").forward(request, response);
+        return true;
+    }
+
+    public static boolean isTransactionDNEWithRedirect404(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        long requestedUserId = Long.parseLong(request.getAttribute("userId").toString());
+        long requestedBalanceId = Long.parseLong(request.getAttribute("balanceId").toString());
+        long requestedTransactionId = Long.parseLong(request.getAttribute("transactionId").toString());
+        boolean isTransactionPresent = false;
+        try {
+            isTransactionPresent = TransactionDAO.findIfTransactionExistsByUserIdAndBalanceIdAndTransactionId(
+                    WebAppUtil.getConnection(request), requestedUserId, requestedBalanceId, requestedTransactionId);
+            if (isTransactionPresent){
                 return false;
             }
         } catch (SQLException e) {

@@ -15,4 +15,9 @@
     <c:if test="${empty sessionScope.loggedInUser.username}">
         Hello <b>Guest</b>!
     </c:if>
+    <c:if test="${isAdmin}">
+        <p>
+            <a href="/users">List of users</a>
+        </p>
+    </c:if>
 </div>

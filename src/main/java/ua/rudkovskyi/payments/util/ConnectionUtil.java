@@ -17,7 +17,7 @@ public class ConnectionUtil {
         try {
             conn.close();
         } catch (Exception e) {
-            //TODO Exception for conn close
+            e.printStackTrace();
         }
     }
 
@@ -25,7 +25,7 @@ public class ConnectionUtil {
         try {
             conn.rollback();
         } catch (Exception e) {
-            //TODO Exception for conn rollback
+            e.printStackTrace();
         }
     }
 }
