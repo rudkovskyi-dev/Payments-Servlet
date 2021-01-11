@@ -1,9 +1,6 @@
 package ua.rudkovskyi.payments.util;
 
-import ua.rudkovskyi.payments.bean.Balance;
-import ua.rudkovskyi.payments.bean.Role;
 import ua.rudkovskyi.payments.bean.User;
-import ua.rudkovskyi.payments.dao.BalanceDAO;
 
 import javax.servlet.http.HttpServletRequest;
 

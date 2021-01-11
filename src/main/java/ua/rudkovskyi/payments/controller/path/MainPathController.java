@@ -60,18 +60,18 @@ public class MainPathController extends HttpServlet {
         switch (path.size()){
             case (1):
                 request.setAttribute("userId", path.get(0));
-                request.getRequestDispatcher("/WEB-INF/userController").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/userPathController").forward(request, response);
                 break;
             case (2):
                 request.setAttribute("userId", path.get(0));
                 request.setAttribute("balanceId", path.get(1));
-                request.getRequestDispatcher("/WEB-INF/balanceController").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/balancePathController").forward(request, response);
                 break;
             case (3):
                 request.setAttribute("userId", path.get(0));
                 request.setAttribute("balanceId", path.get(1));
                 request.setAttribute("transactionId", path.get(2));
-                request.getRequestDispatcher("/WEB-INF/transactionController").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/transactionPathController").forward(request, response);
                 break;
         }
     }

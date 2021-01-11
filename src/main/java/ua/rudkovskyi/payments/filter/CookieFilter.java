@@ -1,6 +1,5 @@
 package ua.rudkovskyi.payments.filter;
 import ua.rudkovskyi.payments.bean.User;
-import ua.rudkovskyi.payments.dao.UserDAO;
 import ua.rudkovskyi.payments.util.WebAppUtil;
 
 import javax.servlet.*;
@@ -9,8 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 @WebFilter(
         filterName = "cookieFilter",
         urlPatterns = {"/u/*", "/users", "/edit/*", "/create/*"}

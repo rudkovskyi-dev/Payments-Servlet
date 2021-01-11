@@ -1,11 +1,8 @@
 package ua.rudkovskyi.payments.controller.info;
 
-import ua.rudkovskyi.payments.bean.Role;
 import ua.rudkovskyi.payments.bean.Transaction;
-import ua.rudkovskyi.payments.bean.User;
 import ua.rudkovskyi.payments.dao.TransactionDAO;
 import ua.rudkovskyi.payments.util.AuthUtil;
-import ua.rudkovskyi.payments.util.DAOUtil;
 import ua.rudkovskyi.payments.util.PathUtil;
 import ua.rudkovskyi.payments.util.WebAppUtil;
 
@@ -15,18 +12,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.List;
 
 @WebServlet(
-        name = "transactionController",
-        urlPatterns = "/WEB-INF/transactionController"
+        name = "transactionPathController",
+        urlPatterns = "/WEB-INF/transactionPathController"
 )
-public class TransactionController extends HttpServlet {
+public class TransactionPathController extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public TransactionController() {
+    public TransactionPathController() {
         super();
     }
 

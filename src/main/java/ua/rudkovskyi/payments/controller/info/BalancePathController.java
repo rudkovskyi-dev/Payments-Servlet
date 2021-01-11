@@ -1,9 +1,7 @@
 package ua.rudkovskyi.payments.controller.info;
 
 import ua.rudkovskyi.payments.bean.Balance;
-import ua.rudkovskyi.payments.bean.Role;
 import ua.rudkovskyi.payments.bean.Transaction;
-import ua.rudkovskyi.payments.bean.User;
 import ua.rudkovskyi.payments.dao.BalanceDAO;
 import ua.rudkovskyi.payments.dao.TransactionDAO;
 import ua.rudkovskyi.payments.util.AuthUtil;
@@ -20,13 +18,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet(
-        name = "balanceController",
-        urlPatterns = "/WEB-INF/balanceController"
+        name = "balancePathController",
+        urlPatterns = "/WEB-INF/balancePathController"
 )
-public class BalanceController extends HttpServlet {
+public class BalancePathController extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public BalanceController() {
+    public BalancePathController() {
         super();
     }
 

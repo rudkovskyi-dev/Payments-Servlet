@@ -43,10 +43,7 @@ public class EditPathController extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/editBalanceController").forward(request, response);
                 break;
             case (3):
-                request.setAttribute("userId", path.get(0));
-                request.setAttribute("balanceId", path.get(1));
-                request.setAttribute("transactionId", path.get(2));
-                request.getRequestDispatcher("/WEB-INF/editTransactionController").forward(request, response);
+                request.getRequestDispatcher("/404").forward(request, response);
                 break;
         }
     }

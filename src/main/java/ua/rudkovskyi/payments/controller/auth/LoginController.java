@@ -4,7 +4,6 @@ import ua.rudkovskyi.payments.bean.User;
 import ua.rudkovskyi.payments.dao.UserDAO;
 import ua.rudkovskyi.payments.util.WebAppUtil;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

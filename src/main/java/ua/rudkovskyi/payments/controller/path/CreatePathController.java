@@ -34,12 +34,12 @@ public class CreatePathController extends HttpServlet{
         switch (path.size()) {
             case (1):
                 request.setAttribute("userId", path.get(0));
-                request.getRequestDispatcher("/WEB-INF/createUserController").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/createBalanceController").forward(request, response);
                 break;
             case (2):
                 request.setAttribute("userId", path.get(0));
                 request.setAttribute("balanceId", path.get(1));
-                request.getRequestDispatcher("/WEB-INF/createBalanceController").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/createTransactionController").forward(request, response);
                 break;
             case (3):
                 request.getRequestDispatcher("/404").forward(request, response);

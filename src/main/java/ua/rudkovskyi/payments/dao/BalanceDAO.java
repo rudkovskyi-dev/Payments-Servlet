@@ -1,7 +1,6 @@
 package ua.rudkovskyi.payments.dao;
 
 import ua.rudkovskyi.payments.bean.Balance;
-import ua.rudkovskyi.payments.bean.Role;
 import ua.rudkovskyi.payments.bean.User;
 import ua.rudkovskyi.payments.util.DAOUtil;
 

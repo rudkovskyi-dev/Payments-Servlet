@@ -22,13 +22,13 @@ import java.util.List;
 import java.util.Set;
 
 @WebServlet(
-        name = "userController",
-        urlPatterns = "/WEB-INF/userController"
+        name = "userPathController",
+        urlPatterns = "/WEB-INF/userPathController"
 )
-public class UserController extends HttpServlet {
+public class UserPathController extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public UserController() {
+    public UserPathController() {
         super();
     }
 
@@ -137,7 +137,7 @@ public class UserController extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         PrintWriter pw = response.getWriter();
-        pw.println("<p>This is DELETE</p>");
+        pw.println("<p>This is user DELETE page</p>");
         pw.println("<p>User " + request.getAttribute("userId") + "</p>");
     }
 
